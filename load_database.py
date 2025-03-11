@@ -27,30 +27,33 @@ def start_database():
     
     return connection, cursor
 
-def clear_conversations(connection, cursor):
+def clear_conversations(user_id, connection, cursor):
     try:
-        cursor.execute("DELETE FROM conversations")
+        cursor.execute(
+            "DELETE FROM conversations WHERE user_id = %s",
+            (user_id, )       
+        )
         connection.commit()
         print("Database Cleared")
     except Exception as e:
         print(e)
 
 
-def store_conversation(user_message, bot_response, sentiment, connection, cursor):
+def store_conversation(user_id, user_message, bot_response, sentiment, connection, cursor):
     print("storing conversation")
     embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
     embedding = embedding_model.encode([user_message])[0].tolist()
     try:
         cursor.execute(
-            "INSERT INTO conversations (user_message, bot_response, sentiment, embedding) VALUES (%s, %s, %s, %s)",
-            (user_message, bot_response, sentiment, embedding)
+            "INSERT INTO conversations (user_message, bot_response, sentiment, embedding, user_id) VALUES (%s, %s, %s, %s, %s)",
+            (user_message, bot_response, sentiment, embedding, user_id)
         )
         connection.commit()
         print("conversation stored")
     except Exception as e:
         print(e)
 
-def retrieve_past_conversations(query, connection, cursor):
+def retrieve_past_conversations(user_id, query, connection, cursor):
     embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
     query_embedding = embedding_model.encode([query])[0]
 
@@ -58,9 +61,8 @@ def retrieve_past_conversations(query, connection, cursor):
         query_embedding = query_embedding.tolist()
     limit = 3
     cursor.execute(
-        "SELECT timestamp, user_message, bot_response FROM conversations "
-        "ORDER BY embedding <-> %s::vector LIMIT %s",
-        (query_embedding, limit)
+        "SELECT timestamp, user_message, bot_response FROM conversations WHERE user_id = %s ORDER BY embedding <-> %s::vector LIMIT %s",
+        (user_id, query_embedding, limit)
     )
 
     results = cursor.fetchall()
@@ -78,9 +80,10 @@ def retrieve_past_conversations(query, connection, cursor):
 
     return context
 
-def get_last_user_message(connection, cursor):
+def get_last_user_message(user_id, connection, cursor):
     cursor.execute(
-        "SELECT user_message FROM conversations ORDER BY timestamp DESC LIMIT 1;"
+        "SELECT user_message FROM conversations WHERE user_id = %s ORDER BY timestamp DESC LIMIT 1;",
+        (user_id, )
     )
     result = cursor.fetchone()
     return result[0] if result else None  # Return the last message if found

@@ -42,16 +42,17 @@ def translate_en_to_cn(reply):
 
     return translated_text
 
-def chatbot_response(prompt, connection, cursor):
+def chatbot_response(user_id, prompt, connection, cursor):
     sentiment_results = get_sentiment(prompt)
 
     similarity_model = SentenceTransformer("all-MiniLM-L6-v2")
 
     predefined_responses = {
-        "What can you do?": "I am Lumin.AI, your therapist chatbot. I am here to provide 24/7 support by listening and offering resources for your mental well-being. Feel free to talk to me about anything that is affecting your mental health!",
-        "How can you help?": "I am Lumin.AI, your therapist chatbot. I am here to provide 24/7 support by listening and offering resources for your mental well-being. Feel free to talk to me about anything that is affecting your mental health!",
+        "What is your name?" : "I am Lumin.AI, your therapist chatbot."
+        "What can you do?": "I am here to provide 24/7 support by listening and offering resources for your mental well-being. Feel free to talk to me about anything that is affecting your mental health!",
+        "How can you help?": "your therapist chatbot. I am here to provide 24/7 support by listening and offering resources for your mental well-being. Feel free to talk to me about anything that is affecting your mental health!",
         "What are you?": "I am Lumin.AI, your therapist chatbot. I am here to provide 24/7 support by listening and offering resources for your mental well-being. Feel free to talk to me about anything that is affecting your mental health!",
-        "What is your role?": "I am Lumin.AI, your therapist chatbot. I am here to provide 24/7 support by listening and offering resources for your mental well-being. Feel free to talk to me about anything that is affecting your mental health!",
+        "What is your role?": "I am here to provide 24/7 support by listening and offering resources for your mental well-being. Feel free to talk to me about anything that is affecting your mental health!",
         "What are the help lines for mental health issues?": """Here are some helplines:\n- SOS Hotline: Call 1767\n- Mindline: https://www.mindline.sg/\n- MindSG: https://www.healthhub.sg/programmes/mindsg/discover\n- SAMH: https://www.samhealth.org.sg/""",
         "What resources are available?": """Here are mental health resources:\n- SOS Hotline: Call 1767\n- Mindline: https://www.mindline.sg/\n- MindSG: https://www.healthhub.sg/programmes/mindsg/discover\n- SAMH: https://www.samhealth.org.sg/""",
         "Who can I talk to?": """Here are some mental health helplines:\n- SOS Hotline: Call 1767\n- Mindline: https://www.mindline.sg/\n- MindSG: https://www.healthhub.sg/programmes/mindsg/discover\n- SAMH: https://www.samhealth.org.sg/""",
@@ -59,7 +60,7 @@ def chatbot_response(prompt, connection, cursor):
     }
 
     model, tokenizer, device = load_pretrained_model()
-    retrieved_context = retrieve_past_conversations(prompt, connection, cursor)
+    retrieved_context = retrieve_past_conversations(user_id, prompt, connection, cursor)
 
     system_prompt = "You are a helpful and supportive chatbot. Answer the user's question with empathy and clarity, without repeating their words exactly."
     
@@ -81,7 +82,7 @@ def chatbot_response(prompt, connection, cursor):
     if best_score >= 0.7:
         return predefined_responses[best_match], "neutral"
     
-    last_bot_question = get_last_user_message(connection, cursor)
+    last_bot_question = get_last_user_message(user_id, connection, cursor)
     
     if last_bot_question:
         confirmation_phrases = ["yes", "sure", "I need that", "okay", "please", "go ahead"]
@@ -108,7 +109,7 @@ def chatbot_response(prompt, connection, cursor):
         max_length=650,
         repetition_penalty=1.3,
         no_repeat_ngram_size=3,  
-        temperature=0.8,  
+        temperature=0.5,  
         top_p=0.9,  
         top_k=50  
     )
