@@ -58,7 +58,7 @@ if user_input:
     if sentiments == "crisis":
         recipient = "alvinwongster@gmail.com" # therapist email
         trigger_alert(user_input, recipient)
-        
+
     loading_placeholder.empty()
 
     st.session_state.messages.append({"role": "assistant", "content": bot_reply})
