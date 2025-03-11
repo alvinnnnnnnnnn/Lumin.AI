@@ -47,12 +47,12 @@ if user_input:
         with st.spinner("Lumin.AI is thinking..."):
             if st.session_state.language == "Chinese":
                 user_input_translated = translate_cn_to_en(user_input)
-                bot_reply, sentiments = chatbot_response(user_input_translated, st.session_state.connection, st.session_state.cursor)
+                bot_reply, sentiments = chatbot_response(st.session_state.user_id, user_input_translated, st.session_state.connection, st.session_state.cursor)
                 store_conversation(st.session_state.user_id, user_input_translated, bot_reply, sentiments, st.session_state.connection, st.session_state.cursor)
                 bot_reply = translate_en_to_cn(bot_reply)
 
             else:
-                bot_reply, sentiments = chatbot_response(user_input, st.session_state.connection, st.session_state.cursor)
+                bot_reply, sentiments = chatbot_response(st.session_state.user_id, user_input, st.session_state.connection, st.session_state.cursor)
                 store_conversation(st.session_state.user_id, user_input, bot_reply, sentiments, st.session_state.connection, st.session_state.cursor)
 
     if sentiments == "crisis":
