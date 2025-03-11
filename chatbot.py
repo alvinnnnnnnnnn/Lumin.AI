@@ -48,7 +48,7 @@ def chatbot_response(user_id, prompt, connection, cursor):
     similarity_model = SentenceTransformer("all-MiniLM-L6-v2")
 
     predefined_responses = {
-        "What is your name?" : "I am Lumin.AI, your therapist chatbot."
+        "What is your name?" : "I am Lumin.AI, your therapist chatbot.",
         "What can you do?": "I am here to provide 24/7 support by listening and offering resources for your mental well-being. Feel free to talk to me about anything that is affecting your mental health!",
         "How can you help?": "your therapist chatbot. I am here to provide 24/7 support by listening and offering resources for your mental well-being. Feel free to talk to me about anything that is affecting your mental health!",
         "What are you?": "I am Lumin.AI, your therapist chatbot. I am here to provide 24/7 support by listening and offering resources for your mental well-being. Feel free to talk to me about anything that is affecting your mental health!",
