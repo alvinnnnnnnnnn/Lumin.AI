@@ -1,0 +1,8 @@
+transformers
+scikit-learn
+datasets
+pandas
+numpy
+streamlit
+sentence-transformers
+psycopg2-binary
